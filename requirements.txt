@@ -1,7 +1,0 @@
-flask
-gunicorn
-PyPDF2
-flask-cors==4.0.1
-pdfplumber==0.10.1
-openai==1.29.0
-python-docx==1.1.2  # rebuild
