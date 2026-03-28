@@ -1,0 +1,197 @@
+INDEX_HTML = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analyzer AI - ATS Score & Jobs</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2b2929;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .header { 
+            text-align: center; 
+            color: white; 
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+        .header h1 { 
+            font-size: 3em; 
+            margin-bottom: 10px;
+            background: white; 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .upload-box { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 40px; 
+            text-align: center; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .upload-box:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+        .upload-box.dragover { border: 3px dashed #667eea; background: #f8f9ff; }
+        .upload-icon { font-size: 4em; margin-bottom: 20px; }
+        #fileInput { display: none; }
+        .btn { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            padding: 15px 30px; 
+            border: none; 
+            border-radius: 25px; 
+            font-size: 1.1em; 
+            cursor: pointer; 
+            transition: all 0.3s;
+        }
+        .btn:hover { transform: scale(1.05); }
+        .loading { display: none; text-align: center; padding: 20px; }
+        .spinner { 
+            border: 4px solid #f3f3f3; 
+            border-top: 4px solid #667eea; 
+            border-radius: 50%; 
+            width: 50px; 
+            height: 50px; 
+            animation: spin 1s linear infinite; 
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .results { display: none; background: white; border-radius: 20px; padding: 30px; margin-top: 20px; }
+        .score-circle { 
+            width: 200px; height: 200px; 
+            border-radius: 50%; 
+            margin: 20px auto; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 2.5em; 
+            font-weight: bold; 
+            color: white;
+        }
+        .score-90 { background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .score-70 { background: linear-gradient(135deg, #FF9800, #F57C00); }
+        .score-50 { background: linear-gradient(135deg, #f44336, #d32f2f); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px; }
+        .card { background: #f8f9ff; border-radius: 15px; padding: 25px; border-left: 5px solid #667eea; }
+        .card h3 { color: #667eea; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .skill { display: inline-block; background: #667eea; color: white; padding: 8px 16px; border-radius: 20px; margin: 5px 5px 5px 0; }
+        .job { padding: 15px; background: white; border-radius: 10px; margin: 10px 0; }
+        .improvement { padding: 12px; background: #fff3cd; border-radius: 8px; margin: 8px 0; }
+        .resumeborder{
+            border:2px;
+            border-radius:3px;
+            background-color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>🎯 Resume Analyzer AI</h1>
+        <p>ATS Score • Skills • Jobs • Tips</p>
+    </div>
+
+    <!-- ✅ NEW ATS SCORE TEXT -->
+    <h2>ATS Score: <span id="score"></span></h2>
+
+    <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-icon">📄</div>
+        <h3>Upload Resume</h3>
+        <input type="file" id="fileInput" accept=".pdf,.docx">
+    </div>
+
+    <div class="loading" id="loading">Loading...</div>
+    <div class="resumeborder">
+        <div class="results" id="results">
+        <div id="skillsList"></div>
+        <div id="jobsList"></div>
+        <div id="improvementsList"></div>
+        <div id="stats"></div>
+    </div>
+    </div>
+    
+
+    <div id="aiResult"></div>
+
+</div>
+
+<script>
+
+const fileInput = document.getElementById('fileInput');
+
+fileInput.addEventListener('change', handleFile);
+
+async function handleFile() {
+    const file = fileInput.files[0];
+
+    const formData = new FormData();
+    formData.append('resume', file);
+
+    const res = await fetch('/analyze', {
+        method: 'POST',
+        body: formData
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+        showResults(data);
+    }
+}
+
+function showResults(data) {
+
+    // ✅ ORIGINAL SCORE UI
+    const scoreCircle = document.getElementById('scoreCircle');
+    if(scoreCircle){
+        scoreCircle.textContent = data.score;
+    }
+
+    // ✅ NEW SCORE TEXT
+    document.getElementById("score").innerText = data.score;
+
+    document.getElementById('aiResult').innerText = data.ai_analysis;
+
+}
+
+
+// ✅ NEW FUNCTION (YOU ASKED)
+async function uploadResume() {
+    const fileInput = document.getElementById("resume");
+    const formData = new FormData();
+    formData.append("resume", fileInput.files[0]);
+
+    const res = await fetch("/analyze", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+        document.getElementById("score").innerText = data.score;
+        document.getElementById("result").innerText = data.ai_analysis;
+    } else {
+        alert(data.error);
+    }
+}
+
+</script>
+
+</body>
+</html>
+"""
