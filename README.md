@@ -1,6 +1,5 @@
-<<<<<<< HEAD
-# smart-resume-analyzer-and-job-recommendation-system
-This project is a web-based application that helps users improve their resumes by analyzing their content and providing smart feedback. Users can upload their resume in PDF format, and the system extracts the text and evaluates it based on important factors such as skills, keywords, and structure .
-=======
-# smart-resume-analyzer
->>>>>>> ca08e8e0060fc79289059ac19726aa56a5c22117
+ Resume Analyzer (Python, AI Integration)
+• Developed a Python-based application to analyze resumes and extract key information such as skills, education, and keywords
+• Implemented AI-based logic to improve accuracy of keyword extraction and insights generation
+• Worked with data processing techniques to structure and analyze unstructured resume data
+• Strengthened understanding of Python, text processing, and AI integration concepts
